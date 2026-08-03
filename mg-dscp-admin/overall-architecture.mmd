@@ -1,0 +1,49 @@
+flowchart TB
+    subgraph UI["表现层"]
+        Login["登录页<br/>login.vue"]
+        Layout["layout/index.vue 主框架"]
+        Layout --> Navbar["Navbar 顶栏<br/>面包屑/搜索/全屏"]
+        Layout --> Sidebar["Sidebar 侧边栏<br/>递归菜单 SidebarItem"]
+        Layout --> TagsView["TagsView 页签<br/>+ keep-alive 缓存"]
+        Layout --> AppMain["AppMain 内容区<br/>router-view"]
+        AppMain --> Views["业务页面 views/ (28 个业务域)"]
+        Views --> VComps["页面私有组件<br/>views/**/components"]
+    end
+
+    subgraph COMP["公共组件层 src/components (45 个)"]
+        CustomTable["CustomTable<br/>JSON 配置化表格 + 虚拟滚动"]
+        CustomForm["CustomForm<br/>JSON 配置化表单"]
+        SearchTable["SearchTable<br/>查询+列表组合范式"]
+        Pagination["Pagination<br/>分页/游标/异步总数"]
+        Uploads["FileUpload / FileImportUpload<br/>ImageUploadOSS(OSS直传)"]
+        Inputs["BatchSearchInput / BulkSearch<br/>CustomSelect / QuickFilter / Tags"]
+        Tools["FrontTools(Excel→PDF)<br/>Editor / CountryDialog / VirtualList"]
+        custom["index.js 具名导出<br/>(仅 Pagination/RightToolbar 全局注册)"]
+    end
+
+    subgraph INFRA["基础设施层"]
+        Router["router/index.js<br/>静态路由 constantRoutes"]
+        PermGuard["permission.js 全局守卫<br/>白名单 + token 校验"]
+        Store["Vuex store<br/>app/user/permission/tagsView/settings/merchant"]
+        Directives["directive/<br/>v-hasPermi / v-hasRole / v-trim"]
+        Plugins["plugins/<br/>$auth / $cache / $modal / $tab"]
+        Utils["utils/<br/>request.js / rice.js / batchRequest.js<br/>auth.js / storage.js / formatMoney.js"]
+    end
+
+    subgraph API["API 层 src/api (21 个模块, 89 文件)"]
+        ALogin["login.js<br/>/login /getInfo /logout /captchaImage"]
+        AMenu["menu.js<br/>/getRouters 动态菜单"]
+        ABiz["业务 API<br/>business/product/billManage/freight/..."]
+        AOSS["ossAli.js<br/>阿里云 OSS 前端直传"]
+    end
+
+    subgraph BACK["后端服务"]
+        B["民光后端网关<br/>https://*.dropshipchinapro.com/api"]
+        AuthS["认证服务<br/>JWT token"]
+        BOSS["OSS(上传)"]
+    end
+
+    UI --> COMP --> INFRA --> API --> BACK
+    PermGuard --> Store
+    API --> AOSS --> BOSS
+    AMenu --> AuthS

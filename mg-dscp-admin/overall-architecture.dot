@@ -1,0 +1,144 @@
+digraph mg_dscp_admin_arch {
+    rankdir=TB;
+    splines=ortho;
+    nodesep=0.5;
+    ranksep=0.6;
+    compound=true;
+
+    graph [fontname="PingFang SC", fontsize=14, fontcolor="#333333", bgcolor="#FFFFFF"];
+    node  [fontname="PingFang SC", fontsize=11, shape=box, style="rounded,filled", fillcolor="#F0F6FF", color="#409EFF", fontcolor="#1F2D3D", penwidth=1.2, margin="0.2,0.12"];
+    edge  [fontname="PingFang SC", fontsize=10, color="#8A94A6", arrowsize=0.7];
+
+    subgraph cluster_UI {
+        label="表现层 UI";
+        style=filled;
+        fillcolor="#F7F9FC";
+        color="#C0C4CC";
+        fontcolor="#303133";
+        fontsize=13;
+
+        Login [label=<<B>登录页</B><BR/>login.vue / 401 / 404 / redirect>];
+        Layout [label=<<B>layout/index.vue 主框架</B><BR/>App.vue → router-view>, fillcolor="#E4F0FF"];
+        Navbar [label="Navbar 顶栏\n面包屑 / 搜索 / 全屏"];
+        Sidebar [label="Sidebar 侧边栏\n递归菜单 SidebarItem"];
+        TagsView [label="TagsView 页签\nkeep-alive 缓存"];
+        AppMain [label="AppMain 内容区\nrouter-view"];
+        Views [label=<<B>业务页面 views/</B><BR/>28 个业务域(账单/产品库/订单/采购/运费…)<BR/>billManage 887 / productsLib 708 / business 685…>, fillcolor="#E4F0FF"];
+        VComps [label="页面私有组件\nviews/**/components"];
+
+        Layout -> Navbar;
+        Layout -> Sidebar;
+        Layout -> TagsView;
+        Layout -> AppMain;
+        AppMain -> Views;
+        Views -> VComps;
+    }
+
+    subgraph cluster_COMP {
+        label="公共组件层 src/components (45 个)";
+        style=filled;
+        fillcolor="#F6FEF6";
+        color="#67C23A";
+        fontcolor="#303133";
+        fontsize=13;
+
+        CustomTable [label=<<B>CustomTable</B><BR/>JSON 列配置 + 虚拟滚动>, fillcolor="#E8F7E8"];
+        CustomForm [label=<<B>CustomForm</B><BR/>JSON 表单配置 Grid 布局>, fillcolor="#E8F7E8"];
+        SearchTable [label=<<B>SearchTable</B><BR/>查询+列表组合范式>, fillcolor="#E8F7E8"];
+        Pagination [label="Pagination\n分页/游标/异步总数"];
+        Uploads [label="上传族\nFileUpload / FileImportUpload\nImageUploadOSS(OSS直传)"];
+        Inputs [label="输入族\nBatchSearchInput / BulkSearch\nCustomSelect / QuickFilter / Tags"];
+        Tools [label="工具族\nFrontTools(Excel→PDF)\nEditor / CountryDialog / VirtualList"];
+        CompReg [label="index.js 具名导出\n(仅 Pagination/RightToolbar 全局注册)"];
+    }
+
+    subgraph cluster_INFRA {
+        label="基础设施层";
+        style=filled;
+        fillcolor="#FDF6F6";
+        color="#F56C6C";
+        fontcolor="#303133";
+        fontsize=13;
+
+        Router [label=<<B>router/index.js</B><BR/>静态路由 constantRoutes + hash 模式>, fillcolor="#FBE9E9"];
+        PermGuard [label=<<B>permission.js 全局守卫</B><BR/>白名单 + token 校验 + 动态路由注入>, fillcolor="#FBE9E9"];
+        Store [label=<<B>Vuex store</B><BR/>app/user/permission/<BR/>tagsView/settings/merchant>, fillcolor="#FBE9E9"];
+        Directives [label="directive/\nv-hasPermi / v-hasRole / v-trim"];
+        Plugins [label="plugins/\n$auth / $cache / $modal / $tab"];
+        Utils [label="utils/\nrequest.js / rice.js / batchRequest.js\nformatMoney.js / storage.js"];
+    }
+
+    subgraph cluster_API {
+        label="API 层 src/api (21 模块 / 89 文件)";
+        style=filled;
+        fillcolor="#F4F0FD";
+        color="#722ED1";
+        fontcolor="#303133";
+        fontsize=13;
+
+        ALogin [label="login.js\n/login /getInfo /logout /captchaImage", fillcolor="#ECE4FB"];
+        AMenu [label="menu.js\n/getRouters 动态菜单", fillcolor="#ECE4FB"];
+        ABiz [label="业务 API\nbusiness / product / billManage\nfreight / purchaseManage…", fillcolor="#ECE4FB"];
+        AOSS [label="ossAli.js\n阿里云 OSS 前端直传", fillcolor="#ECE4FB"];
+    }
+
+    subgraph cluster_BACK {
+        label="后端服务";
+        style=filled;
+        fillcolor="#F0F0F0";
+        color="#606266";
+        fontcolor="#303133";
+        fontsize=13;
+
+        B [label="民光后端网关\nhttps://*.dropshipchinapro.com/api", shape=box3d, fillcolor="#E2E2E2"];
+        AuthS [label="认证服务\nJWT token", fillcolor="#E2E2E2"];
+        BOSS [label="OSS 存储", fillcolor="#E2E2E2"];
+    }
+
+    // 层次之间的依赖
+    Views -> CustomTable;
+    Views -> CustomForm;
+    Views -> SearchTable;
+    Views -> Uploads;
+    Views -> ABiz;
+
+    CustomTable -> CompReg;
+    CustomForm -> CompReg;
+    SearchTable -> CompReg;
+
+    SearchTable -> CustomTable;
+    SearchTable -> CustomForm;
+
+    UI_lbl [label="", shape=plain, width=0, height=0];
+    COMP_lbl [label="", shape=plain, width=0, height=0];
+    INFRA_lbl [label="", shape=plain, width=0, height=0];
+
+    CustomTable -> INFRA_lbl [style=invis];
+    Router -> INFRA_lbl [style=invis];
+
+    Views -> Utils;
+    Views -> Plugins;
+    Views -> Store;
+
+    PermGuard -> Store;
+    PermGuard -> Router;
+
+    Store -> ALogin;
+    Store -> AMenu;
+    Router -> Store;
+
+    ABiz -> Utils;
+    ALogin -> Utils;
+    AMenu -> Utils;
+
+    Utils -> B [label="axios"];
+    AOSS -> BOSS;
+    AMenu -> AuthS;
+    ALogin -> B;
+    ABiz -> B;
+
+    // 保持分层:各层横向边暗示顺序
+    Login -> Layout [style=invis];
+    CompReg -> Router [style=invis];
+    Utils -> ABiz [style=invis];
+}
