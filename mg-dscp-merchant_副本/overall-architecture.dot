@@ -1,0 +1,156 @@
+digraph mg_dscp_merchant_arch {
+    rankdir=TB;
+    splines=ortho;
+    nodesep=0.5;
+    ranksep=0.6;
+    compound=true;
+
+    graph [fontname="PingFang SC", fontsize=14, fontcolor="#333333", bgcolor="#FFFFFF"];
+    node  [fontname="PingFang SC", fontsize=11, shape=box, style="rounded,filled", fillcolor="#F0F6FF", color="#409EFF", fontcolor="#1F2D3D", penwidth=1.2, margin="0.2,0.12"];
+    edge  [fontname="PingFang SC", fontsize=10, color="#8A94A6", arrowsize=0.7];
+
+    subgraph cluster_UI {
+        label="表现层 UI";
+        style=filled;
+        fillcolor="#F7F9FC";
+        color="#C0C4CC";
+        fontcolor="#303133";
+        fontsize=13;
+
+        App [label=<<B>App.vue</B><BR/>仅 RouterView 极简壳>, fillcolor="#E4F0FF"];
+        AuthLayout [label="AuthLayout\n登录/找回密码(品牌+表单分栏)"];
+        AppLayout [label=<<B>AppLayout 主工作台</B><BR/>顶部导航 + 侧边栏 + 内容区>, fillcolor="#E4F0FF"];
+        Navbar [label="AppNavbar\n通知/搜索/语言"];
+        Sidebar [label="AppSidebar + DynamicMenu\n递归菜单(前端裁剪)"];
+        Content [label="RouterView 内容区\nkeep-alive?"];
+        Views [label=<<B>业务页面 views/</B><BR/>订单/市场/店铺/钱包/账单/会员<BR/>库存/报价/佣金/账号/个人>, fillcolor="#E4F0FF"];
+        AuthPages [label="auth 登录/Signup/协议/问卷/退货登记"];
+
+        App -> AppLayout;
+        App -> AuthLayout;
+        AppLayout -> Navbar;
+        AppLayout -> Sidebar;
+        AppLayout -> Content;
+        Content -> Views;
+        AuthLayout -> AuthPages;
+    }
+
+    subgraph cluster_COMP {
+        label="组件层 src/components";
+        style=filled;
+        fillcolor="#F6FEF6";
+        color="#67C23A";
+        fontcolor="#303133";
+        fontsize=13;
+
+        ExcelToPdf [label=<<B>ExcelToPdfTool.vue</B><BR/>报价单生成/预览/打印(7786行)<BR/>ExcelJS + JSZip + QRCode + PDF模板>, fillcolor="#E8F7E8"];
+        Paginations [label=<<B>Paginations</B><BR/>分页封装(全局注册)>, fillcolor="#E8F7E8"];
+        VaTable [label="VaTableDataComp\nVuestic 表格封装<br/>固定列/表头配色"];
+        VaChart [label="VaChart\nchart.js 图表族(7种)"];
+        Signature [label="SignatureDialog\n签名板(OSS上传)"];
+        TreeSelect [label="TreeSelectByVa / FormItem<br/>ModelBoxAndTitle / ImgPicShow"];
+    }
+
+    subgraph cluster_UIKIT {
+        label="双 UI 体系";
+        style=filled;
+        fillcolor="#FDF6F6";
+        color="#F56C6C";
+        fontcolor="#303133";
+        fontsize=13;
+
+        EP [label=<<B>Element Plus</B><BR/>业务组件:表单/弹窗/分页<BR/>ElMessageBox/ElLoading>, fillcolor="#FBE9E9"];
+        Vuestic [label=<<B>Vuestic UI</B><BR/>布局框架:VaLayout/VaNavbar<BR/>VaSidebar/VaDataTable>, fillcolor="#FBE9E9"];
+        Tailwind [label="Tailwind CSS<br/>main.scss 样式链路"];
+    }
+
+    subgraph cluster_INFRA {
+        label="基础设施层";
+        style=filled;
+        fillcolor="#FDF6F6";
+        color="#F56C6C";
+        fontcolor="#303133";
+        fontsize=13;
+
+        Router [label=<<B>router/index.js</B><BR/>纯静态路由(hash模式)<BR/>懒加载 + meta切换Tab>, fillcolor="#FBE9E9"];
+        Perm [label=<<B>permission.js 守卫</B><BR/>白名单 + token校验<BR/>佣金角色路由闸门>, fillcolor="#FBE9E9"];
+        Stores [label=<<B>Pinia stores</B><BR/>user(options式核心认证)<BR/>global / counter>, fillcolor="#FBE9E9"];
+        I18n [label="vue-i18n 9 语言<br/>cn/gb/es/br/ir/fr/de/nl/ar<br/>useI18n.ts 扩展"];
+        Utils [label="utils/<br/>auth.js / aes.js / validIndex.js<br/>formatMoney.js / commissionFormat.js<br/>notify.js / plugins/cache.js"];
+        Request [label=<<B>utils/request.js</B><BR/>竞态保护 + 请求去重<BR/>防重复提交 + 401重登 + 统一下载>, fillcolor="#FBE9E9"];
+    }
+
+    subgraph cluster_API {
+        label="API 层 src/api (18 模块)";
+        style=filled;
+        fillcolor="#F4F0FD";
+        color="#722ED1";
+        fontcolor="#303133";
+        fontsize=13;
+
+        ALogin [label="login.js\n/merchant/auth/*", fillcolor="#ECE4FB"];
+        AOrder [label="order.js\n订单+退货+USPS面单", fillcolor="#ECE4FB"];
+        AProduct [label="product.js\n选品/市场/导入", fillcolor="#ECE4FB"];
+        AStore [label="store.js 店铺/授权", fillcolor="#ECE4FB"];
+        ABiz [label="balance / billingHistory<br/>myMember / myInventory / quotation<BR/>accountManagement / personal / stock", fillcolor="#ECE4FB"];
+        AComm [label="referralCommission.js\n佣金提成 6 接口", fillcolor="#ECE4FB"];
+        AOSS [label="ossAli.js\nOSS 前端直传(ali-oss)", fillcolor="#ECE4FB"];
+        AOther [label="other.js 仪表盘/公告<br/>questionnaire / termApplication", fillcolor="#ECE4FB"];
+    }
+
+    subgraph cluster_BACK {
+        label="后端服务";
+        style=filled;
+        fillcolor="#F0F0F0";
+        color="#606266";
+        fontcolor="#303133";
+        fontsize=13;
+
+        B [label="民光后端 /merchant/*\nprelink / app.dropshipchinapro.com", shape=box3d, fillcolor="#E2E2E2"];
+        AuthS [label="认证服务", fillcolor="#E2E2E2"];
+        BOSS [label="OSS 存储", fillcolor="#E2E2E2"];
+    }
+
+    // page to component
+    Views -> ExcelToPdf;
+    Views -> Paginations;
+    Views -> VaTable;
+    Views -> VaChart;
+    Views -> Signature;
+    Views -> AOSS;
+
+    // ui kit
+    Views -> EP;
+    AppLayout -> Vuestic;
+    AuthLayout -> Vuestic;
+    Views -> Tailwind;
+
+    // infra
+    Sidebar -> Stores;
+    Navbar -> Stores;
+    Perm -> Router;
+    Perm -> Stores;
+    Views -> Request;
+    Views -> Stores;
+    Views -> I18n;
+    Views -> Utils;
+
+    // api layer
+    ALogin -> Request;
+    AOrder -> Request;
+    AProduct -> Request;
+    AStore -> Request;
+    ABiz -> Request;
+    AComm -> Request;
+    AOther -> Request;
+    Stores -> ALogin;
+
+    // backend
+    Request -> B [label="axios"];
+    AOSS -> BOSS;
+    ALogin -> AuthS;
+
+    // layout edge
+    AppLayout -> Views [style=invis];
+    Router -> Views [style=invis];
+}
