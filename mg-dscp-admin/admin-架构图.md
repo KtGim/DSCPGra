@@ -266,18 +266,18 @@ flowchart LR
 
 ## 9. 核心枢纽节点(graphify 图谱数据)
 
-| 排名 | 文件 | 连接数 | 说明 |
-|---|---|---|---|
-| 1 | `views/productsLib/quotation/components/cudQuotationNew.vue` | 188 | 报价新建(最复杂业务组件) |
-| 2 | `components/FrontTools/excelFiles/ExcelToPdfTool.vue` | 120 | Excel→PDF 工具 |
-| 3 | `views/afterSalesManage/afterSales/index.vue` | 101 | 售后列表 |
-| 4 | `views/cw/customer/index.vue` | 95 | 财务客户 |
-| 5 | `views/productsLib/quotation/index.vue` | 95 | 报价列表 |
-| 6 | `views/billManage/billSummary/index.vue` | 88 | 账单汇总 |
-| 7 | `views/freight/shiptplv3/index.vue` | 74 | 运费模板 v3 |
-| 8 | `views/purchaseManage/placeOrderBy1688/index.vue` | 73 | 1688 下单 |
-| 9 | `views/billManage/fixedPrice/components/table.vue` | 66 | 固定费用 |
-| 10 | `views/billManage/billDetails/components/billOrderDetails.vue` | 65 | 账单明细 |
+| 排名  | 文件                                                             | 连接数 | 说明            |
+| --- | -------------------------------------------------------------- | --- | ------------- |
+| 1   | `views/productsLib/quotation/components/cudQuotationNew.vue`   | 188 | 报价新建(最复杂业务组件) |
+| 2   | `components/FrontTools/excelFiles/ExcelToPdfTool.vue`          | 120 | Excel→PDF 工具  |
+| 3   | `views/afterSalesManage/afterSales/index.vue`                  | 101 | 售后列表          |
+| 4   | `views/cw/customer/index.vue`                                  | 95  | 财务客户          |
+| 5   | `views/productsLib/quotation/index.vue`                        | 95  | 报价列表          |
+| 6   | `views/billManage/billSummary/index.vue`                       | 88  | 账单汇总          |
+| 7   | `views/freight/shiptplv3/index.vue`                            | 74  | 运费模板 v3       |
+| 8   | `views/purchaseManage/placeOrderBy1688/index.vue`              | 73  | 1688 下单       |
+| 9   | `views/billManage/fixedPrice/components/table.vue`             | 66  | 固定费用          |
+| 10  | `views/billManage/billDetails/components/billOrderDetails.vue` | 65  | 账单明细          |
 
 **图谱社区概览**(548 个社区中节点最多的):报价新建(cudQuotationNew)、账单明细(billAfterSale/billOrderDetails)、ExcelToPdfTool、quotation.js API、CustomTable 内核(TableBody/TableColumn/const.js)、resize.js 图表族、系统管理(getMenuTreeselect 社区)。
 
@@ -315,4 +315,3 @@ flowchart LR
 3. `permission.js`、`request.js` 共享模块级 `isRelogin` 全局标志,存在耦合
 4. 动态路由组件路径与 `src/views` 文件必须严格匹配,否则导航失败
 5. 报价(`cudQuotationNew.vue`)等单组件连接数过高,复杂度过大
-6. 图谱构建时间早于当前代码(commit `4454997d`),精确结论以当前源码为准
